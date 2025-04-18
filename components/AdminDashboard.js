@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import CardSelector from '#/CardSelector';
 import SectionHeader from '#/SectionHeader';
-import EditableCardList from '#/EditableCardList';
+import EditableTable from '#/EditableTable';
 
 // COMPONENT
 export default function AdminDashboard({ divisions }) {
@@ -27,14 +27,6 @@ export default function AdminDashboard({ divisions }) {
     const scores = selectedSeasonData?.scores || [];
     const schedule = selectedSeasonData?.schedule || [];
 
-    const handleTeamEdit = (team) => {
-        console.log('Edit team:', team);
-    };
-
-    const handleScheduleEdit = (match) => {
-        console.log('Edit match:', match);
-    };
-
     return (
         <>
             {/* DIVISION MENU */}
@@ -44,7 +36,7 @@ export default function AdminDashboard({ divisions }) {
                 cardProperty="divisionName"
                 onSelect={(id) => {
                     setSelectedDivision(id);
-                    setSelectedSeasonId(null); // Reset season on division change
+                    setSelectedSeasonId(null);
                 }}
                 selected={selectedDivision}
             />
@@ -60,29 +52,73 @@ export default function AdminDashboard({ divisions }) {
 
             {/* TEAMS */}
             <SectionHeader title="Teams" />
-            <EditableCardList
+            <EditableTable
                 items={teams}
-                fields={['name', 'win', 'loss', 'pf', 'pa']}
+                teamList={teams}
+                fields={['displayName']}
+                headers={['Team Name']}
                 editable
-                onEdit={handleTeamEdit}
+                onEdit={(updatedRow, index) => {
+                    if (updatedRow) {
+                        // update logic
+                        console.log('Updated row:', updatedRow, 'at index', index);
+                    } else {
+                        // deletion logic
+                        console.log('Deleted row at index', index);
+                    }
+                }}
+                getTeamName={(teamId) => {
+                    const team = teams.find(team => team._id === teamId);
+                    return team ? team.displayName : 'Unknown Team';
+                }}
             />
 
             {/* SCORES */}
             <SectionHeader title="Scores" />
-            <EditableCardList
+            <EditableTable
                 items={scores}
+                teamList={teams}
                 fields={['team1', 'score1', 'team2', 'score2']}
-                editable={false}
+                headers={['Team 1', 'Score 1', 'Team 2', 'Score 2']}
+                editable
+                onEdit={(updatedRow, index) => {
+                    if (updatedRow) {
+                        // update logic
+                        console.log('Updated row:', updatedRow, 'at index', index);
+                    } else {
+                        // deletion logic
+                        console.log('Deleted row at index', index);
+                    }
+                }}
+                getTeamName={(teamId) => {
+                    const team = teams.find(team => team._id === teamId);
+                    return team ? team.displayName : 'Unknown Team';
+                }}
             />
 
             {/* SCHEDULE */}
             <SectionHeader title="Schedule" />
-            <EditableCardList
+            <EditableTable
                 items={schedule}
+                teamList={teams}
                 fields={['homeTeam', 'awayTeam', 'date', 'time']}
+                headers={['Home Team', 'Away Team', 'Date', 'Time']}
                 editable
-                onEdit={handleScheduleEdit}
+                onEdit={(updatedRow, index) => {
+                    if (updatedRow) {
+                        // update logic
+                        console.log('Updated row:', updatedRow, 'at index', index);
+                    } else {
+                        // deletion logic
+                        console.log('Deleted row at index', index);
+                    }
+                }}
+                getTeamName={(teamId) => {
+                    const team = teams.find(team => team._id === teamId);
+                    return team ? team.displayName : 'Unknown Team';
+                }}
             />
+
         </>
     );
 }
