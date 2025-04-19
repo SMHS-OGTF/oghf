@@ -23,7 +23,11 @@ export default function AdminDashboard({ divisions }) {
         return selectedDivisionData?.seasons.find(s => s._id === selectedSeasonId);
     }, [selectedDivisionData, selectedSeasonId]);    
 
-    const teams = selectedSeasonData?.teams || [];
+    const teams = (selectedSeasonData?.teams || []).map(team => ({
+        ...team,
+        _id: team._id || team.id,
+        id: team.id || team._id,
+    }));
     const scores = selectedSeasonData?.scores || [];
     const schedule = selectedSeasonData?.schedule || [];
 
@@ -68,8 +72,21 @@ export default function AdminDashboard({ divisions }) {
                     }
                 }}
                 getTeamName={(teamId) => {
-                    const team = teams.find(team => team._id === teamId);
+                    const team = teams.find(team => team._id === teamId || team.id === teamId);
                     return team ? team.displayName : 'Unknown Team';
+                }}
+                renderField={(field, value, onChange) => {
+                    // Render textboxes for team names
+                    if (field === 'displayName') {
+                        return (
+                            <input
+                                type="text"
+                                value={value}
+                                onChange={(e) => onChange(e.target.value)}
+                            />
+                        );
+                    }
+                    return null;
                 }}
             />
 
@@ -91,8 +108,27 @@ export default function AdminDashboard({ divisions }) {
                     }
                 }}
                 getTeamName={(teamId) => {
-                    const team = teams.find(team => team._id === teamId);
+                    const team = teams.find(team => team._id === teamId || team.id === teamId);
                     return team ? team.displayName : 'Unknown Team';
+                }}
+                renderField={(field, value, onChange) => {
+                    // Render dropdowns for team selection
+                    if (field === 'team1' || field === 'team2') {
+                        return (
+                            <select
+                                value={value}
+                                onChange={(e) => onChange(e.target.value)}
+                            >
+                                <option value="">Select Team</option>
+                                {teams.map((team) => (
+                                    <option key={team._id} value={team._id}>
+                                        {team.displayName}
+                                    </option>
+                                ))}
+                            </select>
+                        );
+                    }
+                    return <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />;
                 }}
             />
 
@@ -114,8 +150,27 @@ export default function AdminDashboard({ divisions }) {
                     }
                 }}
                 getTeamName={(teamId) => {
-                    const team = teams.find(team => team._id === teamId);
+                    const team = teams.find(team => team._id === teamId || team.id === teamId);
                     return team ? team.displayName : 'Unknown Team';
+                }}
+                renderField={(field, value, onChange) => {
+                    // Render dropdowns for team selection
+                    if (field === 'homeTeam' || field === 'awayTeam') {
+                        return (
+                            <select
+                                value={value}
+                                onChange={(e) => onChange(e.target.value)}
+                            >
+                                <option value="">Select Team</option>
+                                {teams.map((team) => (
+                                    <option key={team._id} value={team._id}>
+                                        {team.displayName}
+                                    </option>
+                                ))}
+                            </select>
+                        );
+                    }
+                    return <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />;
                 }}
             />
 

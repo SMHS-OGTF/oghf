@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 // COMPONENT
 export default function EditableTable({ items, teamList, fields, headers, editable = false, onEdit, getTeamName }) {
-    const teamFieldSelectionList = ["displayName", "team1", "team2", "homeTeam", "awayTeam"];
+    const teamFieldSelectionList = ["team1", "team2", "homeTeam", "awayTeam"];
 
     const [editingIndex, setEditingIndex] = useState(null);
     const [editedRow, setEditedRow] = useState({});
@@ -60,12 +60,14 @@ export default function EditableTable({ items, teamList, fields, headers, editab
                             {fields.map((field) => (
                                 <td key={field} className="px-4 py-2">
                                     {editingIndex === idx ? (
+                                        // Render dropdowns for team fields (except "displayName")
                                         teamFieldSelectionList.includes(field) ? (
                                             <select
                                                 value={editedRow[field] || ''}
                                                 onChange={(e) => handleChange(field, e.target.value)}
                                                 className="border rounded px-2 py-1 w-full"
                                             >
+                                                <option value="">Select Team</option>
                                                 {teamList.map(team => (
                                                     <option key={team.id} value={team.id}>
                                                         {team.displayName}
@@ -73,6 +75,7 @@ export default function EditableTable({ items, teamList, fields, headers, editab
                                                 ))}
                                             </select>
                                         ) : (
+                                            // Render textboxes for non-team fields or "displayName"
                                             <input
                                                 type="text"
                                                 className="border rounded px-2 py-1 w-full"
@@ -81,20 +84,13 @@ export default function EditableTable({ items, teamList, fields, headers, editab
                                             />
                                         )
                                     ) : (
+                                        // Display team names for team fields or raw values for others
                                         teamFieldSelectionList.includes(field) ? (
-                                            field == "displayName" ? (
-                                                console.log("item[field]", item[field]),
-                                                console.log("item", item),
-                                                console.log("getTeamName(item[field])", getTeamName(item[field])),
-                                                console.log("item.id", item.id)
-                                            ) : {},
-                                            getTeamName(item[field])
-
+                                            getTeamName(item[field]) || 'Unknown Team'
                                         ) : (
-                                        item[field]
+                                            item[field]
                                         )
                                     )}
-
                                 </td>
                             ))}
                             {editable && (
@@ -137,11 +133,3 @@ export default function EditableTable({ items, teamList, fields, headers, editab
         </div>
     );
 }
-
-
-{/* <input
-    type="text"
-    className="border rounded px-2 py-1 w-full"
-    value={editedRow[field] || ''}
-    onChange={(e) => handleChange(field, e.target.value)}
-/> */}
