@@ -5,6 +5,7 @@ import { useState, useMemo } from 'react';
 import CardSelector from '#/CardSelector';
 import SectionHeader from '#/SectionHeader';
 import EditableTable from '#/EditableTable';
+import DbOperationBar from '#/dbOperationBar';
 
 // COMPONENT
 export default function AdminDashboard({ divisions }) {
@@ -34,7 +35,14 @@ export default function AdminDashboard({ divisions }) {
     return (
         <>
             {/* DIVISION MENU */}
-            <SectionHeader title="Divisions" topSpace={false} />
+            <SectionHeader topSpace={true}>
+                Divisions
+                <DbOperationBar 
+                    createFunction={() => {}}
+                    editFunction={() => {}}
+                    deleteFunction={() => {}}
+                />
+            </SectionHeader>
             <CardSelector
                 cards={divisions}
                 cardProperty="divisionName"
@@ -46,7 +54,14 @@ export default function AdminDashboard({ divisions }) {
             />
 
             {/* SEASON MENU */}
-            <SectionHeader title="Seasons" />
+            <SectionHeader>
+                Seasons
+                <DbOperationBar 
+                    createFunction={() => {}}
+                    editFunction={() => {}}
+                    deleteFunction={() => {}}
+                />
+            </SectionHeader>
             <CardSelector
                 cards={selectedSeasons}
                 cardProperty="seasonName"
@@ -55,7 +70,12 @@ export default function AdminDashboard({ divisions }) {
             />
 
             {/* TEAMS */}
-            <SectionHeader title="Teams" />
+            <SectionHeader>
+                Teams
+                <DbOperationBar 
+                    createFunction={() => {}}
+                />
+            </SectionHeader>
             <EditableTable
                 items={teams}
                 teamList={teams}
@@ -91,7 +111,12 @@ export default function AdminDashboard({ divisions }) {
             />
 
             {/* SCORES */}
-            <SectionHeader title="Scores" />
+            <SectionHeader>
+                Scores
+                <DbOperationBar 
+                    createFunction={() => {}}
+                />
+            </SectionHeader>
             <EditableTable
                 items={scores}
                 teamList={teams}
@@ -112,7 +137,6 @@ export default function AdminDashboard({ divisions }) {
                     return team ? team.displayName : 'Unknown Team';
                 }}
                 renderField={(field, value, onChange) => {
-                    // Render dropdowns for team selection
                     if (field === 'team1' || field === 'team2') {
                         return (
                             <select
@@ -133,7 +157,12 @@ export default function AdminDashboard({ divisions }) {
             />
 
             {/* SCHEDULE */}
-            <SectionHeader title="Schedule" />
+            <SectionHeader>
+                Schedule
+                <DbOperationBar 
+                    createFunction={() => {}}
+                />
+            </SectionHeader>
             <EditableTable
                 items={schedule}
                 teamList={teams}
@@ -154,7 +183,6 @@ export default function AdminDashboard({ divisions }) {
                     return team ? team.displayName : 'Unknown Team';
                 }}
                 renderField={(field, value, onChange) => {
-                    // Render dropdowns for team selection
                     if (field === 'homeTeam' || field === 'awayTeam') {
                         return (
                             <select

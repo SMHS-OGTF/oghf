@@ -36,7 +36,7 @@ export default function EditableTable({ items, teamList, fields, headers, editab
 
     const deleteRow = () => {
         if (onEdit) {
-            onEdit(null, editingIndex); // null signals deletion
+            onEdit(null, editingIndex);
         }
         cancelEdit();
     };

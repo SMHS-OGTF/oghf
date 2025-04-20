@@ -44,7 +44,7 @@ export default async function Home() {
 
     return <>    
         {/* DIVISON MENU */}
-        <SectionHeader title="Division" topSpace={false}/>
+        <SectionHeader topSpace={false}>Division</SectionHeader>
         <select defaultValue="12v12" className="select bg-uiDark text-uiBg w-full text-lg block">
             <option>12v12</option>
             <option>9v9</option>
@@ -52,7 +52,7 @@ export default async function Home() {
         </select>
 
         {/* SEASONS */}
-        <SectionHeader title="Seasons" />
+        <SectionHeader>Seasons</SectionHeader>
         <div className="flex flex-wrap gap-1 w-full">
             {[...seasons].map(item => (
                 <a key={item._id} className="text-uiDark text-lg hover:underline mr-2 hover:cursor-pointer">{item.seasonName} ({item.division})</a>
@@ -60,7 +60,7 @@ export default async function Home() {
         </div>
 
         {/* STANDINGS */}
-        <SectionHeader title="Standings" />
+        <SectionHeader>Standings</SectionHeader>
         <div className="overflow-auto">
             <table className="table text-uiDark text-base">
                 <thead>
@@ -95,7 +95,7 @@ export default async function Home() {
         </div>
 
         {/* SCORE */}
-        <SectionHeader title="Scores" />
+        <SectionHeader>Scores</SectionHeader>
         <div className="flex flex-wrap gap-1 w-full">
             {games.map(game => (
                 <div className="py-2 px-4 min-w-[200px] inline-block w-[19.8%] text-lg bg-gray-300 hover:brightness-[0.90]" key={game.key}>
