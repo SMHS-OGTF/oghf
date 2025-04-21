@@ -40,7 +40,7 @@ export default async function Home() {
         { "homeTeam": "St Joe", "awayTeam": "St Lucas", "date": "2024-03-19", "time": "21:00"}
     ];
 
-    const seasons = await fetchData({})
+    const seasons = []
 
     return <>    
         {/* DIVISON MENU */}

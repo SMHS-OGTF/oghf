@@ -137,7 +137,18 @@ export default function AdminDashboard({ divisions }) {
             <SectionHeader>
                 Teams
                 <DbOperationBar 
-                    createFunction={() => {}}
+                    createFunction={async () => {
+                        const teamName = prompt("Enter the name of the new team:");
+                        if (teamName && selectedDivision && selectedSeasonId) {
+                            console.log("Creating team:", { divisionId: selectedDivision, seasonId: selectedSeasonId, teamName });
+                            await fetch('/api/teams', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId, teamName }),
+                            });
+                            location.reload(); // Reload to fetch updated data
+                        }
+                    }}
                 />
             </SectionHeader>
             <EditableTable
@@ -146,21 +157,36 @@ export default function AdminDashboard({ divisions }) {
                 fields={['displayName']}
                 headers={['Team Name']}
                 editable
-                onEdit={(updatedRow, index) => {
+                onEdit={async (updatedRow, index) => {
                     if (updatedRow) {
-                        // update logic
-                        console.log('Updated row:', updatedRow, 'at index', index);
+                        await fetch('/api/teams', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                divisionId: selectedDivision,
+                                seasonId: selectedSeasonId,
+                                teamId: teams[index].id,
+                                updatedTeam: updatedRow,
+                            }),
+                        });
                     } else {
-                        // deletion logic
-                        console.log('Deleted row at index', index);
+                        await fetch('/api/teams', {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                divisionId: selectedDivision,
+                                seasonId: selectedSeasonId,
+                                teamId: teams[index].id,
+                            }),
+                        });
                     }
+                    location.reload();
                 }}
                 getTeamName={(teamId) => {
                     const team = teams.find(team => team._id === teamId || team.id === teamId);
                     return team ? team.displayName : 'Unknown Team';
                 }}
                 renderField={(field, value, onChange) => {
-                    // Render textboxes for team names
                     if (field === 'displayName') {
                         return (
                             <input
@@ -178,7 +204,17 @@ export default function AdminDashboard({ divisions }) {
             <SectionHeader>
                 Scores
                 <DbOperationBar 
-                    createFunction={() => {}}
+                    createFunction={async () => {
+                        if (selectedDivision && selectedSeasonId) {
+                            console.log("Creating score:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
+                            await fetch('/api/scores', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId }),
+                            });
+                            location.reload(); // Reload to fetch updated data
+                        }
+                    }}
                 />
             </SectionHeader>
             <EditableTable
@@ -187,14 +223,32 @@ export default function AdminDashboard({ divisions }) {
                 fields={['team1', 'score1', 'team2', 'score2']}
                 headers={['Away Team', 'Away Team Points', 'Home Team', 'Home Team Points']}
                 editable
-                onEdit={(updatedRow, index) => {
+                onEdit={async (updatedRow, index) => {
                     if (updatedRow) {
-                        // update logic
-                        console.log('Updated row:', updatedRow, 'at index', index);
+                        // Update score
+                        await fetch('/api/scores', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                divisionId: selectedDivision,
+                                seasonId: selectedSeasonId,
+                                scoreIndex: index,
+                                updatedScore: updatedRow,
+                            }),
+                        });
                     } else {
-                        // deletion logic
-                        console.log('Deleted row at index', index);
+                        // Delete score
+                        await fetch('/api/scores', {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                divisionId: selectedDivision,
+                                seasonId: selectedSeasonId,
+                                scoreIndex: index,
+                            }),
+                        });
                     }
+                    location.reload(); // Reload to fetch updated data
                 }}
                 getTeamName={(teamId) => {
                     const team = teams.find(team => team._id === teamId || team.id === teamId);
@@ -224,7 +278,17 @@ export default function AdminDashboard({ divisions }) {
             <SectionHeader>
                 Schedule
                 <DbOperationBar 
-                    createFunction={() => {}}
+                    createFunction={async () => {
+                        if (selectedDivision && selectedSeasonId) {
+                            console.log("Creating schedule entry:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
+                            await fetch('/api/schedule', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId }),
+                            });
+                            location.reload(); // Reload to fetch updated data
+                        }
+                    }}
                 />
             </SectionHeader>
             <EditableTable
@@ -233,14 +297,32 @@ export default function AdminDashboard({ divisions }) {
                 fields={['homeTeam', 'awayTeam', 'date', 'time']}
                 headers={['Home Team', 'Away Team', 'Date', 'Time']}
                 editable
-                onEdit={(updatedRow, index) => {
+                onEdit={async (updatedRow, index) => {
                     if (updatedRow) {
-                        // update logic
-                        console.log('Updated row:', updatedRow, 'at index', index);
+                        // Update schedule
+                        await fetch('/api/schedule', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                divisionId: selectedDivision,
+                                seasonId: selectedSeasonId,
+                                scheduleIndex: index,
+                                updatedSchedule: updatedRow,
+                            }),
+                        });
                     } else {
-                        // deletion logic
-                        console.log('Deleted row at index', index);
+                        // Delete schedule
+                        await fetch('/api/schedule', {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                divisionId: selectedDivision,
+                                seasonId: selectedSeasonId,
+                                scheduleIndex: index,
+                            }),
+                        });
                     }
+                    location.reload(); // Reload to fetch updated data
                 }}
                 getTeamName={(teamId) => {
                     const team = teams.find(team => team._id === teamId || team.id === teamId);
