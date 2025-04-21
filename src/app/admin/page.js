@@ -25,15 +25,13 @@ export default async function Admin() {
         _id: _id.toString(),
         divisionName,
         seasons: seasons.map(season => ({
-            _id: `${divisionName}_${season.seasonName}`, // Give season a unique ID
+            _id: season._id.toString(), // Use the ObjectId from the database
             seasonName: season.seasonName,
             teams: season.teams || [],
             scores: season.scores || [],
             schedule: season.schedule || [],
         })),
     }));
-
-
 
     return <>
         {/* TITLE */}

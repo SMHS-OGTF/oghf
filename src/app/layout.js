@@ -1,5 +1,6 @@
 // IMPORTS
 import { initDbConnection } from "$/libs/mongo"
+// import "$/libs/seasonIds"
 import "./globals.css"
 
 // PAGE

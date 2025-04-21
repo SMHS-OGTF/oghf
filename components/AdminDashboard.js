@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import CardSelector from '#/CardSelector';
 import SectionHeader from '#/SectionHeader';
 import EditableTable from '#/EditableTable';
-import DbOperationBar from '#/dbOperationBar';
+import DbOperationBar from '#/DbOperationBar';
 
 // COMPONENT
 export default function AdminDashboard({ divisions }) {
@@ -38,9 +38,41 @@ export default function AdminDashboard({ divisions }) {
             <SectionHeader topSpace={true}>
                 Divisions
                 <DbOperationBar 
-                    createFunction={() => {}}
-                    editFunction={() => {}}
-                    deleteFunction={() => {}}
+                    createFunction={async () => {
+                        const divisionName = prompt("Enter the name of the new division:");
+                        if (divisionName) {
+                            console.log("Creating division:", { divisionName });
+                            await fetch('/api/divisions', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ divisionName }),
+                            });
+                            location.reload(); // Reload to fetch updated data
+                        }
+                    }}
+                    editFunction={async () => {
+                        const newName = prompt("Enter the new name for the division:");
+                        if (newName && selectedDivision) {
+                            console.log("Editing division:", { divisionId: selectedDivision, divisionName: newName });
+                            await fetch('/api/divisions', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: selectedDivision, divisionName: newName }),
+                            });
+                            location.reload();
+                        }
+                    }}
+                    deleteFunction={async () => {
+                        if (selectedDivision && confirm("Are you sure you want to delete this division?")) {
+                            console.log("Deleting division:", { divisionId: selectedDivision });
+                            await fetch('/api/divisions', {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: selectedDivision }),
+                            });
+                            location.reload();
+                        }
+                    }}
                 />
             </SectionHeader>
             <CardSelector
@@ -57,9 +89,41 @@ export default function AdminDashboard({ divisions }) {
             <SectionHeader>
                 Seasons
                 <DbOperationBar 
-                    createFunction={() => {}}
-                    editFunction={() => {}}
-                    deleteFunction={() => {}}
+                    createFunction={async () => {
+                        const seasonName = prompt("Enter the name of the new season:");
+                        if (seasonName && selectedDivision) {
+                            console.log("Creating season:", { divisionId: selectedDivision, seasonName });
+                            await fetch('/api/seasons', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ divisionId: selectedDivision, seasonName }),
+                            });
+                            location.reload(); // Reload to fetch updated data
+                        }
+                    }}
+                    editFunction={async () => {
+                        const newName = prompt("Enter the new name for the season:");
+                        if (newName && selectedDivision && selectedSeasonId) {
+                            console.log("Editing season:", { divisionId: selectedDivision, seasonId: selectedSeasonId, seasonName: newName });
+                            await fetch('/api/seasons', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId, seasonName: newName }),
+                            });
+                            location.reload();
+                        }
+                    }}
+                    deleteFunction={async () => {
+                        if (selectedDivision && selectedSeasonId && confirm("Are you sure you want to delete this season?")) {
+                            console.log("Deleting season:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
+                            await fetch('/api/seasons', {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId }),
+                            });
+                            location.reload();
+                        }
+                    }}
                 />
             </SectionHeader>
             <CardSelector
@@ -121,7 +185,7 @@ export default function AdminDashboard({ divisions }) {
                 items={scores}
                 teamList={teams}
                 fields={['team1', 'score1', 'team2', 'score2']}
-                headers={['Team 1', 'Score 1', 'Team 2', 'Score 2']}
+                headers={['Away Team', 'Away Team Points', 'Home Team', 'Home Team Points']}
                 editable
                 onEdit={(updatedRow, index) => {
                     if (updatedRow) {
@@ -205,3 +269,53 @@ export default function AdminDashboard({ divisions }) {
         </>
     );
 }
+
+/*
+{
+  "_id": {
+    "$oid": "67f27d278d517a9ad0f9349d"
+  },
+  "divisionName": "9v9",
+  "seasons": [
+    {
+      "seasonName": "2024",
+      "teams": [
+        {
+          "id": "stmark",
+          "displayName": "St. Mark"
+        },
+        // ...
+      ],
+      "rankings": [
+        {
+          "teamId": "stmark",
+          "win": 5,
+          "loss": 13,
+          "pf": 1,
+          "pa": 8
+        },
+        // ...
+      ],
+      "scores": [
+        {
+          "team1": "stmark",
+          "score1": 3,
+          "team2": "stjoe",
+          "score2": 1
+        },
+        // ...
+      ],
+      "schedule": [
+        {
+          "homeTeam": "stmark",
+          "awayTeam": "stjoe",
+          "date": "2024-03-10",
+          "time": "15:00"
+        },
+        // ...
+      ]
+    },
+    // ...
+  ]
+}
+*/
