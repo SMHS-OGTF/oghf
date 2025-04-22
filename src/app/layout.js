@@ -19,6 +19,9 @@ export default async function RootLayout({ children }) {
                         <section className="w-[90vw] bg-uiLight mt-8 mx-auto p-8 shadow-md">
                             {children}
                         </section>
+
+                        {/* SPACER */}
+                        <div className="h-16"></div>
                 </main>
             </body>
         </html>

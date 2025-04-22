@@ -1,7 +1,7 @@
 'use client';
 
 // IMPORT
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import CardSelector from '#/CardSelector';
 import SectionHeader from '#/SectionHeader';
 import EditableTable from '#/EditableTable';
@@ -18,6 +18,13 @@ export default function AdminDashboard({ divisions }) {
     );
 
     const selectedSeasons = selectedDivisionData?.seasons || [];
+
+    useEffect(() => {
+        // Automatically select the first season if none is selected
+        if (selectedSeasons.length > 0 && !selectedSeasonId) {
+            setSelectedSeasonId(selectedSeasons[0]._id);
+        }
+    }, [selectedSeasons, selectedSeasonId]);
 
     const selectedSeasonData = useMemo(() => {
         if (!selectedSeasonId) return null;
@@ -138,6 +145,10 @@ export default function AdminDashboard({ divisions }) {
                 Teams
                 <DbOperationBar 
                     createFunction={async () => {
+                        if (!selectedSeasonId) {
+                            alert("Please select a season first.");
+                            return;
+                        }
                         const teamName = prompt("Enter the name of the new team:");
                         if (teamName && selectedDivision && selectedSeasonId) {
                             console.log("Creating team:", { divisionId: selectedDivision, seasonId: selectedSeasonId, teamName });
@@ -205,6 +216,10 @@ export default function AdminDashboard({ divisions }) {
                 Scores
                 <DbOperationBar 
                     createFunction={async () => {
+                        if (!selectedSeasonId) {
+                            alert("Please select a season first.");
+                            return;
+                        }
                         if (selectedDivision && selectedSeasonId) {
                             console.log("Creating score:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
                             await fetch('/api/scores', {
@@ -279,6 +294,10 @@ export default function AdminDashboard({ divisions }) {
                 Schedule
                 <DbOperationBar 
                     createFunction={async () => {
+                        if (!selectedSeasonId) {
+                            alert("Please select a season first.");
+                            return;
+                        }
                         if (selectedDivision && selectedSeasonId) {
                             console.log("Creating schedule entry:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
                             await fetch('/api/schedule', {

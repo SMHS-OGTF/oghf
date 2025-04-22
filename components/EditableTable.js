@@ -41,6 +41,51 @@ export default function EditableTable({ items, teamList, fields, headers, editab
         cancelEdit();
     };
 
+    const renderField = (field, value, onChange) => {
+        if (field === 'homeTeam' || field === 'awayTeam') {
+            return (
+                <select
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="bg-transparent text-uiDark w-full rounded-md outline-[1px] outline-uiDark outline-none appearance-none pr-8 bg-[url('/chevron.svg')] bg-no-repeat bg-right bg-[length:1rem_1rem]"
+                >
+                    <option value="">Select Team</option>
+                    {teamList.map((team) => (
+                        <option key={team.id} value={team.id}>
+                            {team.displayName}
+                        </option>
+                    ))}
+                </select>
+            );
+        }
+        if (field === 'date') {
+            return (
+                <input
+                    type="date"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="bg-uiLight text-uiDark w-full rounded-md outline-[1px] outline-uiDark outline-none"
+                />
+            );
+        }
+        if (field === 'time') {
+            return (
+                <input
+                    type="time"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="bg-uiLight text-uiDark w-full rounded-md outline-[1px] outline-uiDark outline-none"
+                />
+            );
+        }
+        return <input 
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)} 
+            className='bg-uiLight text-uiDark w-full rounded-md outline-[1px] outline-uiDark outline-none'
+        />;
+    };
+
     return (
         <div className="overflow-auto">
             <table className="table table-fixed text-uiDark text-base">
@@ -60,26 +105,7 @@ export default function EditableTable({ items, teamList, fields, headers, editab
                             {fields.map((field) => (
                                 <td key={field} className="py-2">
                                     {editingIndex === idx ? (
-                                        teamFieldSelectionList.includes(field) ? (
-                                            <select
-                                                value={editedRow[field] || ''}
-                                                onChange={(e) => handleChange(field, e.target.value)}
-                                                className="bg-transparent text-uiDark w-full rounded-md outline-[1px] outline-uiDark outline-none appearance-none pr-8 bg-[url('/chevron.svg')] bg-no-repeat bg-right bg-[length:1rem_1rem]"
-                                            >
-                                                {teamList.map(team => (
-                                                    <option key={team.id} value={team.id}>
-                                                        {team.displayName}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        ) : (
-                                            <input
-                                                type="text"
-                                                className="bg-uiLight text-uiDark w-full rounded-md outline-[1px] outline-uiDark outline-none"
-                                                value={editedRow[field] || ''}
-                                                onChange={(e) => handleChange(field, e.target.value)}
-                                            />
-                                        )
+                                        renderField(field, editedRow[field] || '', (value) => handleChange(field, value))
                                     ) : (
                                         teamFieldSelectionList.includes(field) ? (
                                             getTeamName(item[field]) || 'Unknown Team'
