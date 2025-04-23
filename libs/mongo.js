@@ -22,5 +22,15 @@ export default async function fetchData(query) {
         await initDbConnection();
     }
     const cursor = global._mongoDbClient.db("LeagueWebsiteData").collection("divisions");
-    return await cursor.find(query).toArray();
+    const data = await cursor.find(query).toArray();
+
+    // Convert `_id` fields to strings
+    return data.map(item => ({
+        ...item,
+        _id: item._id.toString(),
+        seasons: item.seasons?.map(season => ({
+            ...season,
+            _id: season._id.toString(),
+        })),
+    }));
 }
