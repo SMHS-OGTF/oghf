@@ -42,7 +42,7 @@ export default function EditableTable({ items, teamList, fields, headers, editab
     };
 
     const renderField = (field, value, onChange) => {
-        if (field === 'homeTeam' || field === 'awayTeam') {
+        if (field === 'homeTeam' || field === 'awayTeam' || field === 'team1' || field === 'team2') {
             return (
                 <select
                     value={value}

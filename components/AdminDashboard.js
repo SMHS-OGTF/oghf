@@ -42,6 +42,7 @@ export default function AdminDashboard({ divisions }) {
             })));
             setScores(selectedSeasonData.scores || []);
             setSchedule(selectedSeasonData.schedule || []);
+            console.log("Updated scores:", selectedSeasonData.scores);
         }
     }, [selectedSeasonData]);
 
@@ -246,6 +247,7 @@ export default function AdminDashboard({ divisions }) {
                             });
                             if (response.ok) {
                                 const { score } = await response.json();
+                                console.log("New score created:", score); // Debugging
                                 setScores((prevScores) => [...prevScores, score]); // Add the new score to the state
                             }
                         }
@@ -296,6 +298,8 @@ export default function AdminDashboard({ divisions }) {
                     return team ? team.displayName : 'Unknown Team';
                 }}
                 renderField={(field, value, onChange) => {
+                    console.log("------------------")
+                    console.log("Rendering field:", field, value);
                     if (field === 'team1' || field === 'team2' || field === 'homeTeam' || field === 'awayTeam') {
                         return (
                             <select
