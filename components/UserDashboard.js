@@ -14,6 +14,7 @@ export default function UserDashboard({ divisions }) {
     const [standings, setStandings] = useState([]);
     const [scores, setScores] = useState([]);
     const [schedule, setSchedule] = useState([]);
+    const [teams, setTeams] = useState([]);
 
     // Fetch data for the selected division and season
     useEffect(() => {
@@ -23,7 +24,14 @@ export default function UserDashboard({ divisions }) {
         setStandings(seasonData?.rankings || []);
         setScores(seasonData?.scores || []);
         setSchedule(seasonData?.schedule || []);
+        setTeams(seasonData?.teams || []);
     }, [selectedDivision, selectedSeason, divisions]);
+
+    // Function to get the team's display name
+    const getTeamName = (teamId) => {
+        const team = teams.find(team => team._id === teamId || team.id === teamId);
+        return team ? team.displayName : 'Unknown Team';
+    };
 
     return (
         <>
@@ -57,7 +65,7 @@ export default function UserDashboard({ divisions }) {
                                     {index + 1}
                                     {index + 1 <= 3 ? ['st', 'nd', 'rd'][index] : 'th'}
                                 </td>
-                                <td>{team.teamId}</td>
+                                <td>{getTeamName(team.teamId)}</td>
                                 <td>{team.win}</td>
                                 <td>{team.loss}</td>
                                 <td>
@@ -76,7 +84,7 @@ export default function UserDashboard({ divisions }) {
             <div className="flex flex-wrap gap-1 w-full">
                 {scores.map((game, index) => (
                     <div
-                        className="py-2 px-4 min-w-[200px] inline-block w-[19.8%] text-lg bg-gray-300 hover:brightness-[0.90]"
+                        className="py-2 px-4 min-w-[200px] inline-block w-[19.5%] text-lg bg-gray-300 hover:brightness-[0.90]"
                         key={index}
                     >
                         <p
@@ -84,7 +92,7 @@ export default function UserDashboard({ divisions }) {
                                 game.score1 >= game.score2 ? 'font-bold' : ''
                             }`}
                         >
-                            {game.team1}
+                            {getTeamName(game.team1)}
                             <span>{game.score1}</span>
                         </p>
                         <p
@@ -92,7 +100,7 @@ export default function UserDashboard({ divisions }) {
                                 game.score2 >= game.score1 ? 'font-bold' : ''
                             }`}
                         >
-                            @ {game.team2}
+                            @ {getTeamName(game.team2)}
                             <span className="text-right">{game.score2}</span>
                         </p>
                     </div>
@@ -104,11 +112,11 @@ export default function UserDashboard({ divisions }) {
             <div className="flex flex-wrap gap-1 w-full">
                 {schedule.map((event, index) => (
                     <div
-                        className="py-2 px-4 min-w-[200px] inline-block w-[19.8%] text-lg bg-gray-300 hover:brightness-[0.90]"
+                        className="py-2 px-4 min-w-[200px] inline-block w-[19.5%] text-lg bg-gray-300 hover:brightness-[0.90]"
                         key={index}
                     >
                         <p className="text-uiDark text-center text-lg font-bold">
-                            {event.awayTeam} @ {event.homeTeam}
+                            {getTeamName(event.awayTeam)} @ {getTeamName(event.homeTeam)}
                         </p>
                         <p className="text-uiDark text-center text-base">
                             {event.date} - {event.time}
