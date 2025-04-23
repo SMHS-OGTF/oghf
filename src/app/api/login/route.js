@@ -17,7 +17,7 @@ export async function POST(request) {
     response.cookies.set('isAdmin', 'true', {
         httpOnly: true,
         path: '/',
-        maxAge: 60 * 60 * 24, // 1 day expiration
+        maxAge: 60 * 60 * 24 * 1.5, // 1.5 day expiration
     });
 
     return response;

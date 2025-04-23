@@ -11,6 +11,9 @@ import DbOperationBar from '#/DbOperationBar';
 export default function AdminDashboard({ divisions }) {
     const [selectedDivision, setSelectedDivision] = useState(divisions[0]?._id);
     const [selectedSeasonId, setSelectedSeasonId] = useState(null);
+    const [teams, setTeams] = useState([]);
+    const [scores, setScores] = useState([]);
+    const [schedule, setSchedule] = useState([]);
 
     const selectedDivisionData = useMemo(
         () => divisions.find(d => d._id === selectedDivision),
@@ -20,7 +23,6 @@ export default function AdminDashboard({ divisions }) {
     const selectedSeasons = selectedDivisionData?.seasons || [];
 
     useEffect(() => {
-        // Automatically select the first season if none is selected
         if (selectedSeasons.length > 0 && !selectedSeasonId) {
             setSelectedSeasonId(selectedSeasons[0]._id);
         }
@@ -31,13 +33,17 @@ export default function AdminDashboard({ divisions }) {
         return selectedDivisionData?.seasons.find(s => s._id === selectedSeasonId);
     }, [selectedDivisionData, selectedSeasonId]);    
 
-    const teams = (selectedSeasonData?.teams || []).map(team => ({
-        ...team,
-        _id: team._id || team.id,
-        id: team.id || team._id,
-    }));
-    const scores = selectedSeasonData?.scores || [];
-    const schedule = selectedSeasonData?.schedule || [];
+    useEffect(() => {
+        if (selectedSeasonData) {
+            setTeams((selectedSeasonData.teams || []).map(team => ({
+                ...team,
+                _id: team._id || team.id,
+                id: team.id || team._id,
+            })));
+            setScores(selectedSeasonData.scores || []);
+            setSchedule(selectedSeasonData.schedule || []);
+        }
+    }, [selectedSeasonData]);
 
     return (
         <>
@@ -152,12 +158,16 @@ export default function AdminDashboard({ divisions }) {
                         const teamName = prompt("Enter the name of the new team:");
                         if (teamName && selectedDivision && selectedSeasonId) {
                             console.log("Creating team:", { divisionId: selectedDivision, seasonId: selectedSeasonId, teamName });
-                            await fetch('/api/teams', {
+                            const response = await fetch('/api/teams', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId, teamName }),
                             });
-                            location.reload(); // Reload to fetch updated data
+                            if (response.ok) {
+                                const updatedTeam = await response.json();
+                                setTeams((prevTeams) => [...prevTeams, updatedTeam.team]);
+                                
+                            }
                         }
                     }}
                 />
@@ -180,8 +190,13 @@ export default function AdminDashboard({ divisions }) {
                                 updatedTeam: updatedRow,
                             }),
                         });
+                        setTeams((prevTeams) => {
+                            const newTeams = [...prevTeams];
+                            newTeams[index] = updatedRow;
+                            return newTeams;
+                        });
                     } else {
-                        await fetch('/api/teams', {
+                        const response = await fetch('/api/teams', {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -190,8 +205,10 @@ export default function AdminDashboard({ divisions }) {
                                 teamId: teams[index].id,
                             }),
                         });
+                        if (response.ok) {
+                            setTeams((prevTeams) => prevTeams.filter((_, i) => i !== index));
+                        }
                     }
-                    location.reload();
                 }}
                 getTeamName={(teamId) => {
                     const team = teams.find(team => team._id === teamId || team.id === teamId);
@@ -222,12 +239,15 @@ export default function AdminDashboard({ divisions }) {
                         }
                         if (selectedDivision && selectedSeasonId) {
                             console.log("Creating score:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
-                            await fetch('/api/scores', {
+                            const response = await fetch('/api/scores', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId }),
                             });
-                            location.reload(); // Reload to fetch updated data
+                            if (response.ok) {
+                                const { score } = await response.json();
+                                setScores((prevScores) => [...prevScores, score]); // Add the new score to the state
+                            }
                         }
                     }}
                 />
@@ -251,9 +271,13 @@ export default function AdminDashboard({ divisions }) {
                                 updatedScore: updatedRow,
                             }),
                         });
+                        setScores((prevScores) => {
+                            const newScores = [...prevScores];
+                            newScores[index] = updatedRow;
+                            return newScores;
+                        });
                     } else {
-                        // Delete score
-                        await fetch('/api/scores', {
+                        const response = await fetch('/api/scores', {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -262,23 +286,25 @@ export default function AdminDashboard({ divisions }) {
                                 scoreIndex: index,
                             }),
                         });
+                        if (response.ok) {
+                            setScores((prevScores) => prevScores.filter((_, i) => i !== index));
+                        }
                     }
-                    location.reload(); // Reload to fetch updated data
                 }}
                 getTeamName={(teamId) => {
                     const team = teams.find(team => team._id === teamId || team.id === teamId);
                     return team ? team.displayName : 'Unknown Team';
                 }}
                 renderField={(field, value, onChange) => {
-                    if (field === 'team1' || field === 'team2') {
+                    if (field === 'team1' || field === 'team2' || field === 'homeTeam' || field === 'awayTeam') {
                         return (
                             <select
-                                value={value}
+                                value={value || ''}
                                 onChange={(e) => onChange(e.target.value)}
                             >
                                 <option value="">Select Team</option>
                                 {teams.map((team) => (
-                                    <option key={team._id} value={team._id}>
+                                    <option key={team._id || team.id} value={team._id || team.id}>
                                         {team.displayName}
                                     </option>
                                 ))}
@@ -300,12 +326,15 @@ export default function AdminDashboard({ divisions }) {
                         }
                         if (selectedDivision && selectedSeasonId) {
                             console.log("Creating schedule entry:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
-                            await fetch('/api/schedule', {
+                            const response = await fetch('/api/schedule', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId }),
                             });
-                            location.reload(); // Reload to fetch updated data
+                            if (response.ok) {
+                                const updatedSchedule = await response.json();
+                                setSchedule((prevSchedule) => [...prevSchedule, updatedSchedule.schedule]);
+                            }
                         }
                     }}
                 />
@@ -329,9 +358,13 @@ export default function AdminDashboard({ divisions }) {
                                 updatedSchedule: updatedRow,
                             }),
                         });
+                        setSchedule((prevSchedule) => {
+                            const newSchedule = [...prevSchedule];
+                            newSchedule[index] = updatedRow;
+                            return newSchedule;
+                        });
                     } else {
-                        // Delete schedule
-                        await fetch('/api/schedule', {
+                        const response = await fetch('/api/schedule', {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -340,23 +373,25 @@ export default function AdminDashboard({ divisions }) {
                                 scheduleIndex: index,
                             }),
                         });
+                        if (response.ok) {
+                            setSchedule((prevSchedule) => prevSchedule.filter((_, i) => i !== index));
+                        }
                     }
-                    location.reload(); // Reload to fetch updated data
                 }}
                 getTeamName={(teamId) => {
                     const team = teams.find(team => team._id === teamId || team.id === teamId);
                     return team ? team.displayName : 'Unknown Team';
                 }}
                 renderField={(field, value, onChange) => {
-                    if (field === 'homeTeam' || field === 'awayTeam') {
+                    if (field === 'team1' || field === 'team2' || field === 'homeTeam' || field === 'awayTeam') {
                         return (
                             <select
-                                value={value}
+                                value={value || ''}
                                 onChange={(e) => onChange(e.target.value)}
                             >
                                 <option value="">Select Team</option>
                                 {teams.map((team) => (
-                                    <option key={team._id} value={team._id}>
+                                    <option key={team._id || team.id} value={team._id || team.id}>
                                         {team.displayName}
                                     </option>
                                 ))}
