@@ -1,24 +1,23 @@
-This is free and unencumbered software released into the public domain.
+Custom License – Educational Use Only
 
-Anyone is free to copy, modify, publish, use, compile, sell, or
-distribute this software, either in source code form or as a compiled
-binary, for any purpose, commercial or non-commercial, and by any
-means.
+Copyright (c) [Your Name] [Year]
 
-In jurisdictions that recognize copyright laws, the author or authors
-of this software dedicate any and all copyright interest in the
-software to the public domain. We make this dedication for the benefit
-of the public at large and to the detriment of our heirs and
-successors. We intend this dedication to be an overt act of
-relinquishment in perpetuity of all present and future rights to this
-software under copyright law.
+Permission is hereby granted to any person obtaining a copy of this codebase to use, copy, modify, and incorporate individual code snippets from this project into their own work, subject to the following conditions:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+1. **Non-Commercial Use Only**: This project, in whole or in part, may not be used for any commercial purpose. That includes selling, licensing, or profiting from the code or any derivative of it.
 
-For more information, please refer to <https://unlicense.org>
+2. **No Duplication of the Full Project**: You may not copy, reproduce, or republish this project as a whole or create a substantially similar version, especially in a live or publicly accessible format.
+
+3. **Attribution Recommended**: If you use code snippets or ideas from this project, a mention or credit is appreciated but not required.
+
+4. **Educational and Personal Use Only**: This project is intended for learning, experimentation, or personal projects. Do not submit this work as entirely your own in academic or professional evaluations.
+
+5. **No Warranty**: This code is provided "as is", without warranty of any kind, express or implied.
+
+6. **License Updates**: This license may be modified or replaced at any time without prior notice. 
+
+By using any part of this codebase, you agree to these terms.
+
+---
+
+For questions about licensing, please open an issue or contact me directly.
