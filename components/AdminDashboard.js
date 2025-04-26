@@ -8,7 +8,8 @@ import EditableTable from '#/EditableTable';
 import DbOperationBar from '#/DbOperationBar';
 
 // COMPONENT
-export default function AdminDashboard({ divisions }) {
+export default function AdminDashboard({ initialDivisions }) {
+    const [divisions, setDivisions] = useState(initialDivisions);
     const [selectedDivision, setSelectedDivision] = useState(divisions[0]?._id);
     const [selectedSeasonId, setSelectedSeasonId] = useState(null);
     const [teams, setTeams] = useState([]);
@@ -19,12 +20,12 @@ export default function AdminDashboard({ divisions }) {
         () => divisions.find(d => d._id === selectedDivision),
         [divisions, selectedDivision]
     );
-    
+
     const selectedSeasons = useMemo(
         () => selectedDivisionData?.seasons || [],
         [selectedDivisionData]
     );
-    
+
     useEffect(() => {
         if (selectedSeasons.length > 0 && !selectedSeasonId) {
             setSelectedSeasonId(selectedSeasons[0]._id);
@@ -34,7 +35,7 @@ export default function AdminDashboard({ divisions }) {
     const selectedSeasonData = useMemo(() => {
         if (!selectedSeasonId) return null;
         return selectedDivisionData?.seasons.find(s => s._id === selectedSeasonId);
-    }, [selectedDivisionData, selectedSeasonId]);    
+    }, [selectedDivisionData, selectedSeasonId]);
 
     useEffect(() => {
         if (selectedSeasonData) {
@@ -47,6 +48,15 @@ export default function AdminDashboard({ divisions }) {
             setSchedule(selectedSeasonData.schedule || []);
         }
     }, [selectedSeasonData]);
+
+    // Function to refetch divisions
+    const refetchDivisions = async () => {
+        const response = await fetch('/api/divisions');
+        if (response.ok) {
+            const updatedDivisions = await response.json();
+            setDivisions(updatedDivisions);
+        }
+    };
 
     return (
         <>
@@ -62,7 +72,7 @@ export default function AdminDashboard({ divisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionName }),
                             });
-                            location.reload(); // Reload to fetch updated data
+                            await refetchDivisions(); // Refetch divisions after creation
                         }
                     }}
                     editFunction={async () => {
@@ -73,7 +83,7 @@ export default function AdminDashboard({ divisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ id: selectedDivision, divisionName: newName }),
                             });
-                            location.reload();
+                            await refetchDivisions(); // Refetch divisions after editing
                         }
                     }}
                     deleteFunction={async () => {
@@ -83,7 +93,7 @@ export default function AdminDashboard({ divisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ id: selectedDivision }),
                             });
-                            location.reload();
+                            await refetchDivisions(); // Refetch divisions after deletion
                         }
                     }}
                 />
@@ -110,7 +120,7 @@ export default function AdminDashboard({ divisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionId: selectedDivision, seasonName }),
                             });
-                            location.reload(); // Reload to fetch updated data
+                            await refetchDivisions(); // Refetch divisions after creating a season
                         }
                     }}
                     editFunction={async () => {
@@ -121,7 +131,7 @@ export default function AdminDashboard({ divisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId, seasonName: newName }),
                             });
-                            location.reload();
+                            await refetchDivisions(); // Refetch divisions after editing a season
                         }
                     }}
                     deleteFunction={async () => {
@@ -131,7 +141,7 @@ export default function AdminDashboard({ divisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId }),
                             });
-                            location.reload();
+                            await refetchDivisions(); // Refetch divisions after deleting a season
                         }
                     }}
                 />
