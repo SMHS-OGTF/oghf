@@ -72,7 +72,8 @@ export default function AdminDashboard({ initialDivisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionName }),
                             });
-                            await refetchDivisions(); // Refetch divisions after creation
+                            await refetchDivisions();
+                            location.reload();
                         }
                     }}
                     editFunction={async () => {
@@ -83,7 +84,8 @@ export default function AdminDashboard({ initialDivisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ id: selectedDivision, divisionName: newName }),
                             });
-                            await refetchDivisions(); // Refetch divisions after editing
+                            await refetchDivisions();
+                            location.reload();
                         }
                     }}
                     deleteFunction={async () => {
@@ -93,7 +95,8 @@ export default function AdminDashboard({ initialDivisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ id: selectedDivision }),
                             });
-                            await refetchDivisions(); // Refetch divisions after deletion
+                            await refetchDivisions();
+                            location.reload();
                         }
                     }}
                 />
@@ -104,6 +107,13 @@ export default function AdminDashboard({ initialDivisions }) {
                 onSelect={(id) => {
                     setSelectedDivision(id);
                     setSelectedSeasonId(null);
+        
+                    const newDivisionData = divisions.find(d => d._id === id);
+                    if (!newDivisionData?.seasons?.length) {
+                        setTeams([]);
+                        setScores([]);
+                        setSchedule([]);
+                    }
                 }}
                 selected={selectedDivision}
             />
@@ -120,7 +130,8 @@ export default function AdminDashboard({ initialDivisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionId: selectedDivision, seasonName }),
                             });
-                            await refetchDivisions(); // Refetch divisions after creating a season
+                            await refetchDivisions();
+                            location.reload();
                         }
                     }}
                     editFunction={async () => {
@@ -131,7 +142,8 @@ export default function AdminDashboard({ initialDivisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId, seasonName: newName }),
                             });
-                            await refetchDivisions(); // Refetch divisions after editing a season
+                            await refetchDivisions();
+                            location.reload();
                         }
                     }}
                     deleteFunction={async () => {
@@ -141,7 +153,8 @@ export default function AdminDashboard({ initialDivisions }) {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ divisionId: selectedDivision, seasonId: selectedSeasonId }),
                             });
-                            await refetchDivisions(); // Refetch divisions after deleting a season
+                            await refetchDivisions();
+                            location.reload();
                         }
                     }}
                 />
