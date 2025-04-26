@@ -6,5 +6,5 @@ import UserDashboard from '#/UserDashboard';
 export default async function Home() {
     const divisions = await fetchData({});
 
-    return <UserDashboard divisions={divisions} />;
+    return <UserDashboard initialDivisions={divisions} />;
 }

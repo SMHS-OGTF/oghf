@@ -6,7 +6,8 @@ import SectionHeader from '#/SectionHeader';
 import DivisionSelector from '#/DivisionSelector';
 
 // COMPONENT
-export default function UserDashboard({ divisions }) {
+export default function UserDashboard({ initialDivisions }) {
+    const [divisions, setDivisions] = useState(initialDivisions);
     const [selectedDivision, setSelectedDivision] = useState(divisions[0]?._id || '');
     const [selectedSeason, setSelectedSeason] = useState(
         divisions[0]?.seasons?.[0]?._id || ''
@@ -14,6 +15,15 @@ export default function UserDashboard({ divisions }) {
     const [scores, setScores] = useState([]);
     const [schedule, setSchedule] = useState([]);
     const [teams, setTeams] = useState([]);
+
+    // Refetch divisions dynamically
+    const refetchDivisions = async () => {
+        const response = await fetch('/api/divisions');
+        if (response.ok) {
+            const updatedDivisions = await response.json();
+            setDivisions(updatedDivisions);
+        }
+    };
 
     useEffect(() => {
         const divisionData = divisions.find(d => d._id === selectedDivision);
@@ -86,6 +96,9 @@ export default function UserDashboard({ divisions }) {
                 onSelectionChange={(divisionId, seasonId) => {
                     setSelectedDivision(divisionId);
                     setSelectedSeason(seasonId);
+
+                    // Refetch divisions when a new division is selected
+                    refetchDivisions();
                 }}
             />
 
