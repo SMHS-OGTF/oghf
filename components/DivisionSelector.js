@@ -58,7 +58,7 @@ export default function DivisionSelector({ divisions, onSelectionChange }) {
                             selectedSeason === season._id ? 'font-bold' : ''
                         }`}
                     >
-                        {season.seasonName} ({selectedDivisionData.divisionName})
+                        {season.seasonName}
                     </button>
                 ))}
             </div>

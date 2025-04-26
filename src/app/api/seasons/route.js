@@ -10,7 +10,6 @@ export async function POST(req) {
         _id: new ObjectId(), // Generate a unique ID for the season
         seasonName,
         teams: [],
-        rankings: [],
         scores: [],
         schedule: [],
     };

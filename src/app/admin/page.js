@@ -25,7 +25,7 @@ export default async function Admin() {
         _id: _id.toString(),
         divisionName,
         seasons: seasons.map(season => ({
-            _id: season._id.toString(), // Use the ObjectId from the database
+            _id: season._id.toString(),
             seasonName: season.seasonName,
             teams: season.teams || [],
             scores: season.scores || [],

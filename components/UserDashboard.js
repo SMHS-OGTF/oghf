@@ -11,27 +11,73 @@ export default function UserDashboard({ divisions }) {
     const [selectedSeason, setSelectedSeason] = useState(
         divisions[0]?.seasons?.[0]?._id || ''
     );
-    const [standings, setStandings] = useState([]);
     const [scores, setScores] = useState([]);
     const [schedule, setSchedule] = useState([]);
     const [teams, setTeams] = useState([]);
 
-    // Fetch data for the selected division and season
     useEffect(() => {
         const divisionData = divisions.find(d => d._id === selectedDivision);
         const seasonData = divisionData?.seasons.find(s => s._id === selectedSeason);
 
-        setStandings(seasonData?.rankings || []);
         setScores(seasonData?.scores || []);
         setSchedule(seasonData?.schedule || []);
         setTeams(seasonData?.teams || []);
     }, [selectedDivision, selectedSeason, divisions]);
 
-    // Function to get the team's display name
     const getTeamName = (teamId) => {
         const team = teams.find(team => team._id === teamId || team.id === teamId);
         return team ? team.displayName : 'Unknown Team';
     };
+
+    const calculateStandings = () => {
+        const standingsMap = {};
+    
+        scores.forEach((game) => {
+            const { team1, score1, team2, score2 } = game;
+    
+            // Initialize teams in the standings map if not already present
+            if (!standingsMap[team1]) {
+                standingsMap[team1] = { teamId: team1, win: 0, loss: 0, pf: 0, pa: 0 };
+            }
+            if (!standingsMap[team2]) {
+                standingsMap[team2] = { teamId: team2, win: 0, loss: 0, pf: 0, pa: 0 };
+            }
+    
+            // Update points for and points against
+            standingsMap[team1].pf += parseInt(score1);
+            standingsMap[team1].pa += parseInt(score2);
+            standingsMap[team2].pf += parseInt(score2);
+            standingsMap[team2].pa += parseInt(score1);
+    
+            // Update wins and losses
+            if (score1 > score2) {
+                standingsMap[team1].win += 1;
+                standingsMap[team2].loss += 1;
+            } else if (score2 > score1) {
+                standingsMap[team2].win += 1;
+                standingsMap[team1].loss += 1;
+            }
+        });
+    
+        // Convert the standings map to an array
+        const standingsArray = Object.values(standingsMap);
+    
+        // Calculate PCT% for each team
+        standingsArray.forEach((team) => {
+            const totalGames = team.win + team.loss;
+            team.pct = totalGames > 0 ? team.win / totalGames : 0; // Avoid division by zero
+        });
+    
+        // Sort by wins, then by PCT%
+        return standingsArray.sort((a, b) => {
+            if (b.win !== a.win) {
+                return b.win - a.win; // Sort by wins
+            }
+            return b.pct - a.pct; // If wins are equal, sort by PCT%
+        });
+    };
+
+    const standings = calculateStandings();
 
     return (
         <>

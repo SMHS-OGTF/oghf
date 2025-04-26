@@ -19,9 +19,12 @@ export default function AdminDashboard({ divisions }) {
         () => divisions.find(d => d._id === selectedDivision),
         [divisions, selectedDivision]
     );
-
-    const selectedSeasons = selectedDivisionData?.seasons || [];
-
+    
+    const selectedSeasons = useMemo(
+        () => selectedDivisionData?.seasons || [],
+        [selectedDivisionData]
+    );
+    
     useEffect(() => {
         if (selectedSeasons.length > 0 && !selectedSeasonId) {
             setSelectedSeasonId(selectedSeasons[0]._id);
@@ -42,7 +45,6 @@ export default function AdminDashboard({ divisions }) {
             })));
             setScores(selectedSeasonData.scores || []);
             setSchedule(selectedSeasonData.schedule || []);
-            console.log("Updated scores:", selectedSeasonData.scores);
         }
     }, [selectedSeasonData]);
 
@@ -55,7 +57,6 @@ export default function AdminDashboard({ divisions }) {
                     createFunction={async () => {
                         const divisionName = prompt("Enter the name of the new division:");
                         if (divisionName) {
-                            console.log("Creating division:", { divisionName });
                             await fetch('/api/divisions', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -67,7 +68,6 @@ export default function AdminDashboard({ divisions }) {
                     editFunction={async () => {
                         const newName = prompt("Enter the new name for the division:");
                         if (newName && selectedDivision) {
-                            console.log("Editing division:", { divisionId: selectedDivision, divisionName: newName });
                             await fetch('/api/divisions', {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
@@ -78,7 +78,6 @@ export default function AdminDashboard({ divisions }) {
                     }}
                     deleteFunction={async () => {
                         if (selectedDivision && confirm("Are you sure you want to delete this division?")) {
-                            console.log("Deleting division:", { divisionId: selectedDivision });
                             await fetch('/api/divisions', {
                                 method: 'DELETE',
                                 headers: { 'Content-Type': 'application/json' },
@@ -106,7 +105,6 @@ export default function AdminDashboard({ divisions }) {
                     createFunction={async () => {
                         const seasonName = prompt("Enter the name of the new season:");
                         if (seasonName && selectedDivision) {
-                            console.log("Creating season:", { divisionId: selectedDivision, seasonName });
                             await fetch('/api/seasons', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -118,7 +116,6 @@ export default function AdminDashboard({ divisions }) {
                     editFunction={async () => {
                         const newName = prompt("Enter the new name for the season:");
                         if (newName && selectedDivision && selectedSeasonId) {
-                            console.log("Editing season:", { divisionId: selectedDivision, seasonId: selectedSeasonId, seasonName: newName });
                             await fetch('/api/seasons', {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
@@ -129,7 +126,6 @@ export default function AdminDashboard({ divisions }) {
                     }}
                     deleteFunction={async () => {
                         if (selectedDivision && selectedSeasonId && confirm("Are you sure you want to delete this season?")) {
-                            console.log("Deleting season:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
                             await fetch('/api/seasons', {
                                 method: 'DELETE',
                                 headers: { 'Content-Type': 'application/json' },
@@ -158,7 +154,6 @@ export default function AdminDashboard({ divisions }) {
                         }
                         const teamName = prompt("Enter the name of the new team:");
                         if (teamName && selectedDivision && selectedSeasonId) {
-                            console.log("Creating team:", { divisionId: selectedDivision, seasonId: selectedSeasonId, teamName });
                             const response = await fetch('/api/teams', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -239,7 +234,6 @@ export default function AdminDashboard({ divisions }) {
                             return;
                         }
                         if (selectedDivision && selectedSeasonId) {
-                            console.log("Creating score:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
                             const response = await fetch('/api/scores', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -247,7 +241,6 @@ export default function AdminDashboard({ divisions }) {
                             });
                             if (response.ok) {
                                 const { score } = await response.json();
-                                console.log("New score created:", score); // Debugging
                                 setScores((prevScores) => [...prevScores, score]); // Add the new score to the state
                             }
                         }
@@ -298,8 +291,6 @@ export default function AdminDashboard({ divisions }) {
                     return team ? team.displayName : 'Unknown Team';
                 }}
                 renderField={(field, value, onChange) => {
-                    console.log("------------------")
-                    console.log("Rendering field:", field, value);
                     if (field === 'team1' || field === 'team2' || field === 'homeTeam' || field === 'awayTeam') {
                         return (
                             <select
@@ -329,7 +320,6 @@ export default function AdminDashboard({ divisions }) {
                             return;
                         }
                         if (selectedDivision && selectedSeasonId) {
-                            console.log("Creating schedule entry:", { divisionId: selectedDivision, seasonId: selectedSeasonId });
                             const response = await fetch('/api/schedule', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -409,53 +399,3 @@ export default function AdminDashboard({ divisions }) {
         </>
     );
 }
-
-/*
-{
-  "_id": {
-    "$oid": "67f27d278d517a9ad0f9349d"
-  },
-  "divisionName": "9v9",
-  "seasons": [
-    {
-      "seasonName": "2024",
-      "teams": [
-        {
-          "id": "stmark",
-          "displayName": "St. Mark"
-        },
-        // ...
-      ],
-      "rankings": [
-        {
-          "teamId": "stmark",
-          "win": 5,
-          "loss": 13,
-          "pf": 1,
-          "pa": 8
-        },
-        // ...
-      ],
-      "scores": [
-        {
-          "team1": "stmark",
-          "score1": 3,
-          "team2": "stjoe",
-          "score2": 1
-        },
-        // ...
-      ],
-      "schedule": [
-        {
-          "homeTeam": "stmark",
-          "awayTeam": "stjoe",
-          "date": "2024-03-10",
-          "time": "15:00"
-        },
-        // ...
-      ]
-    },
-    // ...
-  ]
-}
-*/
