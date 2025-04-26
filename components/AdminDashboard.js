@@ -10,7 +10,7 @@ import DbOperationBar from '#/DbOperationBar';
 // COMPONENT
 export default function AdminDashboard({ initialDivisions }) {
     const [divisions, setDivisions] = useState(initialDivisions);
-    const [selectedDivision, setSelectedDivision] = useState(divisions[0]?._id);
+    const [selectedDivision, setSelectedDivision] = useState(divisions[0]?._id || null);
     const [selectedSeasonId, setSelectedSeasonId] = useState(null);
     const [teams, setTeams] = useState([]);
     const [scores, setScores] = useState([]);
